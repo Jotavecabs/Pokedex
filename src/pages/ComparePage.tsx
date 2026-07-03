@@ -77,12 +77,11 @@ export function ComparePage() {
 
       {ids.length === 2 && <Comparison ids={[ids[0], ids[1]]} />}
 
-      <ComparetPicker open={pickerOpen} onClose={() => setPickerOpen(false)} />
+      <PokemonPicker open={pickerOpen} onClose={() => setPickerOpen(false)} />
     </div>
   );
 }
 
-/** Cabeçalho de um slot preenchido. */
 function CompareSlot({ id }: { id: number }) {
   const { data } = usePokemon(id);
   const remove = useCompareStore((s) => s.remove);
@@ -90,7 +89,6 @@ function CompareSlot({ id }: { id: number }) {
     return <div className="h-40 animate-pulse rounded-2xl bg-gray-50" />;
   }
   const color = getPrimaryTypeColor(data.types.map((t) => t.type.name));
-  // mesma sprite 2D pixelada estática dos cards da listagem
   const sprite = data.sprites.front_default ?? '';
   return (
     <div
@@ -116,7 +114,7 @@ function CompareSlot({ id }: { id: number }) {
   );
 }
 
-/** Tabela de comparação das estatísticas, com destaque no maior valor. */
+// destaca o maior valor de cada estatística
 function Comparison({ ids }: { ids: [number, number] }) {
   const a = usePokemon(ids[0]);
   const b = usePokemon(ids[1]);
@@ -213,8 +211,7 @@ function Total({ value, highlight }: { value: number; highlight: boolean }) {
   );
 }
 
-/** Seletor de Pokémon por busca (para preencher os slots de comparação). */
-function ComparetPicker({ open, onClose }: { open: boolean; onClose: () => void }) {
+function PokemonPicker({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [term, setTerm] = useState('');
   const { data: index = [] } = usePokemonIndex();
   const toggle = useCompareStore((s) => s.toggle);

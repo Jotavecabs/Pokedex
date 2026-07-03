@@ -11,9 +11,17 @@ import {
   toSummary,
 } from '@/lib/pokeapi';
 import { POKEMON_TYPES } from '@/lib/pokemonTypes';
-import type { PokemonSummary, PokemonTypeName } from '@/types/pokemon';
+import {
+  getCachedTranslation,
+  setCachedTranslation,
+  translateToPtBr,
+} from '@/lib/translate';
+import type {
+  PokemonSpecies,
+  PokemonSummary,
+  PokemonTypeName,
+} from '@/types/pokemon';
 
-/** Chaves de cache centralizadas — evita strings mágicas espalhadas. */
 export const queryKeys = {
   index: ['pokemon-index'] as const,
   pokemon: (idOrName: number | string) => ['pokemon', idOrName] as const,
@@ -22,7 +30,6 @@ export const queryKeys = {
   typeIndex: (type: PokemonTypeName) => ['type-index', type] as const,
 };
 
-/** Índice completo da Pokédex (nome+id). Base para busca, ordenação e filtros. */
 export function usePokemonIndex() {
   return useQuery({
     queryKey: queryKeys.index,
@@ -30,7 +37,6 @@ export function usePokemonIndex() {
   });
 }
 
-/** Detalhe de um Pokémon (cacheado por id, reusado em toda a app). */
 export function usePokemon(idOrName: number | string, enabled = true) {
   return useQuery({
     queryKey: queryKeys.pokemon(idOrName),
@@ -39,7 +45,6 @@ export function usePokemon(idOrName: number | string, enabled = true) {
   });
 }
 
-/** Ids de Pokémon pertencentes a um tipo (para o filtro por tipo). */
 export function useTypeIndex(type: PokemonTypeName | null) {
   return useQuery({
     queryKey: type ? queryKeys.typeIndex(type) : ['type-index', 'none'],
@@ -51,10 +56,7 @@ export function useTypeIndex(type: PokemonTypeName | null) {
   });
 }
 
-/**
- * Busca os resumos de uma lista de ids. Cada id é uma query independente,
- * então cards já vistos vêm do cache ao paginar / voltar de outra tela.
- */
+// cada id vira uma query própria — cards já vistos vêm do cache
 export function usePokemonSummaries(ids: number[]): {
   summaries: PokemonSummary[];
   isLoading: boolean;
@@ -78,7 +80,6 @@ export function usePokemonSummaries(ids: number[]): {
   };
 }
 
-/** Espécie (geração, cadeia evolutiva, descrição). */
 export function useSpecies(idOrName: number | string, enabled = true) {
   return useQuery({
     queryKey: queryKeys.species(idOrName),
@@ -87,10 +88,7 @@ export function useSpecies(idOrName: number | string, enabled = true) {
   });
 }
 
-/**
- * Fraquezas de um Pokémon: multiplica as relações de dano de cada um dos
- * seus tipos (2x, 0.5x, 0x) e devolve os tipos cujo resultado é > 1.
- */
+// fraquezas: multiplica as relações de dano de cada tipo (2x, 0.5x, 0x)
 export function useWeaknesses(types: PokemonTypeName[]): {
   weaknesses: PokemonTypeName[];
   isLoading: boolean;
@@ -100,7 +98,7 @@ export function useWeaknesses(types: PokemonTypeName[]): {
       queryKey: ['type-relations', type] as const,
       queryFn: ({ signal }: { signal: AbortSignal }) =>
         getTypeDamageRelations(type, signal),
-      staleTime: Infinity, // relações de tipo nunca mudam
+      staleTime: Infinity,
     })),
   });
 
@@ -133,7 +131,40 @@ export function useWeaknesses(types: PokemonTypeName[]): {
   return { weaknesses, isLoading };
 }
 
-/** Cadeia evolutiva a partir da URL vinda da espécie. */
+function cleanFlavorText(raw: string): string {
+  return raw.replace(/[\f\n\r]+/g, ' ').replace(/POK[ée]MON/g, 'Pokémon').trim();
+}
+
+// descrição em pt-BR: usa pt se existir na API, senão traduz o inglês
+// (cache em localStorage) e mantém o inglês enquanto isso
+export function useFlavorTextPtBr(species: PokemonSpecies | undefined): string | null {
+  const ptEntry = species?.flavor_text_entries.find((e) =>
+    e.language.name.startsWith('pt'),
+  );
+  const enEntry = species?.flavor_text_entries.find(
+    (e) => e.language.name === 'en',
+  );
+  const english = enEntry ? cleanFlavorText(enEntry.flavor_text) : null;
+
+  const translation = useQuery({
+    queryKey: ['flavor-pt', species?.id],
+    queryFn: async ({ signal }) => {
+      const cached = getCachedTranslation(species!.id);
+      if (cached) return cached;
+      const translated = await translateToPtBr(english!, signal);
+      setCachedTranslation(species!.id, translated);
+      return translated;
+    },
+    enabled: Boolean(species && english && !ptEntry),
+    staleTime: Infinity,
+    retry: 1,
+  });
+
+  if (!species) return null;
+  if (ptEntry) return cleanFlavorText(ptEntry.flavor_text);
+  return translation.data ?? english;
+}
+
 export function useEvolutionChain(url: string | undefined) {
   return useQuery({
     queryKey: queryKeys.evolution(url ? extractIdFromUrl(url) : 0),

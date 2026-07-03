@@ -1,7 +1,5 @@
-/**
- * Faixas de id da Pokédex nacional por geração. Permite filtrar por
- * geração sem precisar buscar a espécie de cada Pokémon.
- */
+// Faixas de id da Pokédex nacional por geração
+
 export interface Generation {
   id: number;
   label: string;

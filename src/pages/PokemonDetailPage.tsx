@@ -1,6 +1,11 @@
 import type { ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { usePokemon, useSpecies, useWeaknesses } from '@/api/queries';
+import {
+  useFlavorTextPtBr,
+  usePokemon,
+  useSpecies,
+  useWeaknesses,
+} from '@/api/queries';
 import { FavoriteButton } from '@/components/pokemon/FavoriteButton';
 import { TypeBadge } from '@/components/pokemon/TypeBadge';
 import { TypeIcon } from '@/components/pokemon/TypeIcon';
@@ -27,20 +32,10 @@ import {
 import { cn } from '@/lib/cn';
 import type { PokemonSpecies, StatName } from '@/types/pokemon';
 
-/** Cores da barra de gênero (Figma). */
 const MALE_COLOR = '#2551c3';
 const FEMALE_COLOR = '#ff7596';
 
-/** Descrição da espécie: tenta pt-BR e cai para inglês; limpa quebras. */
-function getFlavorText(species: PokemonSpecies | undefined): string | null {
-  if (!species) return null;
-  const entry =
-    species.flavor_text_entries.find((e) => e.language.name === 'pt') ??
-    species.flavor_text_entries.find((e) => e.language.name === 'en');
-  return entry ? entry.flavor_text.replace(/[\f\n\r]+/g, ' ').trim() : null;
-}
-
-/** Categoria ("Fairy Pokémon" → "Fairy"). */
+// "Fairy Pokémon" → "Fairy"
 function getCategory(species: PokemonSpecies | undefined): string | null {
   const genus = species?.genera.find((g) => g.language.name === 'en')?.genus;
   return genus ? genus.replace(/ Pokémon$/i, '') : null;
@@ -54,6 +49,7 @@ export function PokemonDetailPage() {
 
   const types = pokemon?.types.map((t) => t.type.name) ?? [];
   const { weaknesses } = useWeaknesses(types);
+  const flavor = useFlavorTextPtBr(species);
 
   const toggleCompare = useCompareStore((s) => s.toggle);
   const inCompare = useCompareStore((s) =>
@@ -80,24 +76,18 @@ export function PokemonDetailPage() {
   }
 
   const color = getPrimaryTypeColor(types);
-  const flavor = getFlavorText(species);
   const category = getCategory(species);
   const femaleRatio = species && species.gender_rate >= 0 ? species.gender_rate / 8 : null;
 
-  // ===== Sprite animada em estilo Gen 5 (Black/White) do Showdown =====
-  // A pasta gen5ani serve os GIFs animados baseados no nome do Pokémon.
-  // <img src="*.gif"> anima sozinho — não precisa de nada extra.
-  const customPixelSprite = `https://play.pokemonshowdown.com/sprites/gen5ani/${pokemon.name.toLowerCase()}.gif`;
+  // gif animado do Showdown
+  const showdownName = pokemon.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const customPixelSprite = `https://play.pokemonshowdown.com/sprites/ani/${showdownName}.gif`;
 
   return (
     <div className="pb-6">
-      {/* ===== Header (Figma): círculo 498px com gradiente da cor do tipo ===== */}
+      {/* Header */}
       <div className="relative h-[307px] overflow-hidden bg-white">
-        {/*
-         * Círculo + gradiente linear (cor cheia → 50%), igual ao Figma.
-         * Centralizado e escalando com a largura da tela (o Figma é 360px;
-         * a proporção 498/360 ≈ 1.38 vira 138vw em telas maiores).
-         */}
+        {/* Círculo com o gradiente do tipo */}
         <svg
           className="pointer-events-none absolute left-1/2 -translate-x-1/2"
           style={{
@@ -124,7 +114,7 @@ export function PokemonDetailPage() {
           <circle cx="249" cy="249" r="249" fill="url(#pokemon-header-gradient)" />
         </svg>
 
-        {/* Símbolo do tipo (204px) centralizado dentro do círculo */}
+        {/* Símbolo do tipo */}
         {types[0] && (
           <TypeIcon
             type={types[0]}
@@ -132,15 +122,15 @@ export function PokemonDetailPage() {
           />
         )}
 
-        {/* Render do Pokémon (GIF animado estilo Gen 5, com fallback pra sprite da PokéAPI) */}
+        {/* Sprite */}
         <img
           src={customPixelSprite}
           alt={capitalize(pokemon.name)}
           onError={(e) => {
-            e.currentTarget.onerror = null; // evita loop se o fallback também falhar
+            e.currentTarget.onerror = null;
             e.currentTarget.src = pokemon.sprites.front_default ?? '';
           }}
-          className="absolute left-1/2 top-[60px] h-[190px] w-[190px] -translate-x-1/2 object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)] [image-rendering:pixelated]"
+          className="absolute mt-12 left-1/2 top-[60px] h-[190px] w-[190px] -translate-x-1/2 object-contain drop-shadow-[0_4px_6px_rgba(0,0,0,0.15)] [image-rendering:pixelated]"
         />
 
         {/* Ícones: voltar + favoritar */}
@@ -149,20 +139,20 @@ export function PokemonDetailPage() {
             type="button"
             onClick={() => navigate(-1)}
             aria-label="Voltar"
-            className="grid h-[38px] w-[38px] place-items-center rounded-[5px] text-white drop-shadow hover:bg-white/20"
+            className="grid h-[38px] border-black w-[38px] place-items-center rounded-[5px] text-white drop-shadow hover:bg-white/20"
           >
             <ArrowLeftIcon className="h-6 w-6" strokeWidth={2.5} />
           </button>
           <FavoriteButton
             id={pokemon.id}
-            variant="ghost"
-            size={24}
-            className="h-[38px] w-[38px] border-transparent"
+            variant="bare"
+            size={28}
+            className="h-[38px] w-[38px]"
           />
         </div>
       </div>
 
-      {/* ===== Dados (Figma: 16px de margem, gap 24) ===== */}
+      {/* Dados */}
       <div className="flex flex-col gap-6 px-4 pt-[18px]">
         {/* Nome + número */}
         <header className="leading-tight">
@@ -179,7 +169,7 @@ export function PokemonDetailPage() {
           ))}
         </div>
 
-        {/* Descrição + divisor */}
+        {/* Descrição */}
         {flavor && (
           <div className="flex flex-col gap-5">
             <p className="text-sm leading-[1.45] text-black/70">{flavor}</p>
@@ -187,7 +177,7 @@ export function PokemonDetailPage() {
           </div>
         )}
 
-        {/* Características: peso, altura, categoria, habilidade */}
+        {/* Características */}
         <div className="grid grid-cols-2 gap-5">
           <InfoBox icon={<WeightIcon className="h-4 w-4" />} label="Peso">
             {formatWeight(pokemon.weight)}
@@ -293,7 +283,6 @@ export function PokemonDetailPage() {
   );
 }
 
-/** Campo de característica: rótulo em maiúsculas + caixa com borda (Figma). */
 function InfoBox({
   icon,
   label,

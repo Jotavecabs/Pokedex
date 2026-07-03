@@ -1,6 +1,5 @@
 import { NavLink } from 'react-router-dom';
 
-/** Azul dos itens ativos (Figma). */
 const NAVY = '#173ea5';
 const RED = '#e3350d';
 const GRAY = '#808080';
@@ -12,7 +11,6 @@ interface NavItem {
   inactiveIcon: string;
 }
 
-/** Ícones oficiais exportados do Figma (public/images/nav). */
 const NAV_ITEMS: NavItem[] = [
   {
     to: '/',
@@ -34,7 +32,6 @@ const NAV_ITEMS: NavItem[] = [
   },
 ];
 
-/** Balança do Comparar — desenhada no mesmo estilo dos ícones do Figma. */
 function CompareIcon({ active }: { active: boolean }) {
   const stroke = active ? NAVY : GRAY;
   return (
@@ -56,10 +53,6 @@ function CompareIcon({ active }: { active: boolean }) {
   );
 }
 
-/**
- * Barra de navegação inferior (Figma): 72px, borda superior #e6e6e6,
- * itens 56x56 e rótulo de 12px em azul apenas no item ativo.
- */
 export function Hotbar() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 h-[72px] border-t border-gray-100 bg-white">

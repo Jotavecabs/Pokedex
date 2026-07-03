@@ -7,10 +7,6 @@ interface BottomSheetProps {
   children: ReactNode;
 }
 
-/**
- * Modal ancorado na base da tela (padrão do Figma para os filtros).
- * Fecha no overlay e com Esc; trava o scroll do body enquanto aberto.
- */
 export function BottomSheet({ open, onClose, title, children }: BottomSheetProps) {
   useEffect(() => {
     if (!open) return;

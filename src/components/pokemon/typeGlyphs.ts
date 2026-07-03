@@ -1,7 +1,4 @@
-/**
- * Glifos oficiais dos 18 tipos (viewBox 512x512).
- * Fonte: https://github.com/duiker101/pokemon-type-svg-icons (MIT)
- */
+// Símbolos dos 18 tipos — https://github.com/duiker101/pokemon-type-svg-icons (MIT)
 import type { PokemonTypeName } from '@/types/pokemon';
 
 export const TYPE_GLYPHS: Record<PokemonTypeName, string[]> = {

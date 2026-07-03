@@ -1,6 +1,5 @@
 import { cn } from '@/lib/cn';
 
-/** Indicador de carregamento circular. */
 export function Spinner({ className }: { className?: string }) {
   return (
     <span

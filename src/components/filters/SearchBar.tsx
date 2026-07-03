@@ -1,7 +1,6 @@
 import { useFiltersStore } from '@/store/filtersStore';
 import { SearchIcon } from '@/components/ui/icons';
 
-/** Barra de busca por nome — pill com borda cinza, igual ao Figma. */
 export function SearchBar() {
   const search = useFiltersStore((s) => s.search);
   const setSearch = useFiltersStore((s) => s.setSearch);

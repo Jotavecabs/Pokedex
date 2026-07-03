@@ -15,7 +15,6 @@ export const SORT_LABELS: Record<SortOption, string> = {
   'name-desc': 'Z-A',
 };
 
-/** Faixas de altura (em metros) e peso (em kg) usadas nos filtros. */
 export type HeightBucket = 'all' | 'short' | 'medium' | 'tall';
 export type WeightBucket = 'all' | 'light' | 'medium' | 'heavy';
 
@@ -48,7 +47,6 @@ interface FiltersState {
   setWeight: (bucket: WeightBucket) => void;
   setSort: (sort: SortOption) => void;
   reset: () => void;
-  /** Quantidade de filtros ativos (fora busca e ordenação). */
   activeCount: () => number;
 }
 
@@ -61,10 +59,7 @@ const initial = {
   sort: 'number-asc' as SortOption,
 };
 
-/**
- * Filtros e ordenação. As preferências (tipo, geração, altura, peso e
- * ordenação) persistem em localStorage; a busca é reiniciada a cada sessão.
- */
+// filtros e ordenação; as preferências persistem, a busca não
 export const useFiltersStore = create<FiltersState>()(
   persist(
     (set, get) => ({
@@ -88,7 +83,6 @@ export const useFiltersStore = create<FiltersState>()(
     }),
     {
       name: 'pokedex:filters',
-      // busca não é persistida — só as preferências de filtro/ordenação
       partialize: ({ type, generation, height, weight, sort }) => ({
         type,
         generation,

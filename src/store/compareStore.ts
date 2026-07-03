@@ -1,12 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-/** Máximo de Pokémons comparados simultaneamente. */
 export const MAX_COMPARE = 2;
 
 interface CompareState {
   ids: number[];
-  /** Adiciona/remove; respeita o limite de MAX_COMPARE. */
   toggle: (id: number) => void;
   remove: (id: number) => void;
   isSelected: (id: number) => boolean;
@@ -14,7 +12,7 @@ interface CompareState {
   clear: () => void;
 }
 
-/** Seleção para comparação de estatísticas (até 2 Pokémons). */
+// seleção para a comparação (até 2 Pokémons)
 export const useCompareStore = create<CompareState>()(
   persist(
     (set, get) => ({
@@ -25,7 +23,7 @@ export const useCompareStore = create<CompareState>()(
             return { ids: state.ids.filter((x) => x !== id) };
           }
           if (state.ids.length >= MAX_COMPARE) {
-            // substitui o mais antigo mantendo o limite
+            // substitui o mais antigo
             return { ids: [state.ids[1], id] };
           }
           return { ids: [...state.ids, id] };

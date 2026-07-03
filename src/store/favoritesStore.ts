@@ -2,17 +2,13 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface FavoritesState {
-  /** Ids favoritados. Array (e não Set) para serializar direto no localStorage. */
   ids: number[];
   toggle: (id: number) => void;
   isFavorite: (id: number) => boolean;
   clear: () => void;
 }
 
-/**
- * Estado global de favoritos, persistido em localStorage automaticamente
- * pelo middleware `persist` (atende ao requisito de persistência).
- */
+// favoritos globais, persistidos em localStorage
 export const useFavoritesStore = create<FavoritesState>()(
   persist(
     (set, get) => ({

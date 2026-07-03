@@ -8,10 +8,6 @@ interface TypeBadgeProps {
   size?: 'sm' | 'md';
 }
 
-/**
- * Pill do tipo (Figma): fundo na cor do tipo, círculo branco com o
- * ícone do tipo e nome em pt-BR em branco.
- */
 export function TypeBadge({ type, size = 'sm' }: TypeBadgeProps) {
   const meta = POKEMON_TYPES[type];
   const sm = size === 'sm';
@@ -20,7 +16,6 @@ export function TypeBadge({ type, size = 'sm' }: TypeBadgeProps) {
     <span
       className={cn(
         'inline-flex items-center rounded-full font-medium',
-        // preto ou branco conforme o contraste da cor do tipo (Figma)
         meta.textOnColor === 'light' ? 'text-white' : 'text-black',
         sm ? 'gap-1.5 py-[3px] pl-[3px] pr-2.5 text-[11px]' : 'gap-2 py-1 pl-1 pr-3 text-sm',
       )}

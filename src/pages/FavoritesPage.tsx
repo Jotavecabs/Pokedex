@@ -6,46 +6,41 @@ import { PageHeader } from '@/components/layout/PageHeader';
 import { Spinner } from '@/components/ui/Spinner';
 import type { PokemonSummary } from '@/types/pokemon';
 
-/** Largura da área vermelha revelada pelo swipe (Figma: 122px). */
 const REVEAL_WIDTH = 122;
-/** Fração da largura do card que, ao ser arrastada, remove na hora. */
-const DELETE_RATIO = 0.85;
+const MAX_SWIPE = 105;
 
-/**
- * Card de favorito com "arrastar para a esquerda" (Figma): arrastar um pouco
- * revela a lixeira vermelha (toque para remover); arrastar até o fim
- * desfavorita instantaneamente.
- */
+// arrastar para a esquerda revela a lixeira para desfavoritar
 function SwipeableFavorite({ pokemon }: { pokemon: PokemonSummary }) {
   const toggle = useFavoritesStore((s) => s.toggle);
+
   const [offset, setOffset] = useState(0);
   const [dragging, setDragging] = useState(false);
-  const wrapRef = useRef<HTMLDivElement>(null);
+
   const startX = useRef(0);
   const startOffset = useRef(0);
   const moved = useRef(false);
-  const removed = useRef(false);
-
-  const remove = () => {
-    if (removed.current) return;
-    removed.current = true;
-    toggle(pokemon.id);
-  };
 
   return (
-    <div ref={wrapRef} className="relative overflow-hidden rounded-[15px]">
-      {/* Área revelada: vermelho #cd3131 + lixeira 38px (Figma) */}
+    <div className="relative overflow-hidden rounded-[15px]">
+      {/* Área revelada */}
       <div
         className="absolute inset-y-0 right-0 flex items-center justify-center"
-        style={{ width: REVEAL_WIDTH, backgroundColor: '#cd3131' }}
+        style={{
+          width: REVEAL_WIDTH,
+          backgroundColor: '#cd3131',
+        }}
       >
         <button
           type="button"
           aria-label={`Remover ${pokemon.name} dos favoritos`}
-          onClick={remove}
+          onClick={() => toggle(pokemon.id)}
           className="grid h-full w-full place-items-center active:opacity-80"
         >
-          <img src="/images/nav/trash.svg" alt="" className="h-[38px] w-[38px]" />
+          <img
+            src="/images/nav/trash.svg"
+            alt=""
+            className="h-[38px] w-[38px]"
+          />
         </button>
       </div>
 
@@ -65,32 +60,39 @@ function SwipeableFavorite({ pokemon }: { pokemon: PokemonSummary }) {
         }}
         onPointerMove={(e) => {
           if (!dragging) return;
-          const width = wrapRef.current?.offsetWidth ?? 328;
+
           const dx = e.clientX - startX.current;
-          if (Math.abs(dx) > 5) moved.current = true;
-          const next = Math.min(0, Math.max(-width, startOffset.current + dx));
-          // arrastou até o fim → desfavorita na hora
-          if (next <= -width * DELETE_RATIO) {
-            setOffset(-width);
-            remove();
-            return;
+
+          if (Math.abs(dx) > 5) {
+            moved.current = true;
           }
-          setOffset(next);
+
+          setOffset(
+            Math.min(
+              0,
+              Math.max(-MAX_SWIPE, startOffset.current + dx)
+            )
+          );
         }}
         onPointerUp={() => {
           setDragging(false);
-          setOffset((o) => (o < -REVEAL_WIDTH / 2 ? -REVEAL_WIDTH : 0));
+
+          setOffset((current) =>
+            current < -MAX_SWIPE / 2 ? -MAX_SWIPE : 0
+          );
         }}
         onPointerCancel={() => {
           setDragging(false);
           setOffset(0);
         }}
         onClickCapture={(e) => {
-          // um arrasto não pode navegar para a página do Pokémon
+          // arrasto não pode navegar pra página do Pokémon
           if (moved.current || offset !== 0) {
             e.preventDefault();
             e.stopPropagation();
-            if (!moved.current) setOffset(0);
+            if (!moved.current) {
+              setOffset(0);
+            }
           }
         }}
       >
@@ -109,19 +111,18 @@ export function FavoritesPage() {
       <PageHeader title="Favoritos" />
 
       {ids.length === 0 ? (
-        /* Estado vazio (Figma): Magikarp acinzentada + mensagem */
         <div className="flex flex-col items-center gap-4 px-4 py-16 text-center">
           <img
             src="/images/magikarp.png"
             alt=""
             className="h-[215px] w-[185px] object-contain"
           />
+
           <div className="flex flex-col gap-2">
-            <h2 className="mx-auto max-w-[380px] text-[20px] font-semibold leading-snug text-gray-800">
-              Você não favoritou nenhum
-              <br />
-              Pokémon :(
+            <h2 className="w-[300px] text-[20px] font-semibold text-gray-800">
+              Você não favoritou nenhum Pokémon :(
             </h2>
+
             <p className="mx-auto max-w-[325px] text-sm leading-relaxed text-[#4d4d4d]">
               Clique no ícone de coração dos seus pokémons favoritos e eles
               aparecerão aqui.
@@ -135,9 +136,13 @@ export function FavoritesPage() {
               <Spinner className="h-8 w-8" />
             </div>
           )}
+
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {summaries.map((pokemon) => (
-              <SwipeableFavorite key={pokemon.id} pokemon={pokemon} />
+              <SwipeableFavorite
+                key={pokemon.id}
+                pokemon={pokemon}
+              />
             ))}
           </div>
         </div>

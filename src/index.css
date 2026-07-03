@@ -8,7 +8,7 @@
 @theme {
   --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
 
-  /* Escala de cinza do Figma */
+  /* escala de cinza */
   --color-gray-50: #f2f2f2;
   --color-gray-100: #e6e6e6;
   --color-gray-200: #cccccc;
@@ -31,7 +31,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Esconde a scrollbar mantendo o scroll (bottom sheets) */
+/* esconde a scrollbar mantendo o scroll */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

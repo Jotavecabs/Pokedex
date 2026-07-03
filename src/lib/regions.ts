@@ -1,13 +1,9 @@
-/**
- * Regiões do mundo Pokémon (tela "Regiões" do Figma — Kanto a Galar).
- * Cada uma corresponde a uma geração (faixas de id em `generations.ts`);
- * o fundo vem de `public/images/regions/gen{id}.png` (exportado do Figma).
- */
+// Regiões da tela "Regiões" — cada uma corresponde a uma geração.
+// Fundos em public/images/regions/gen{id}.png
+
 export interface Region {
-  /** Mesmo id da geração correspondente. */
   generationId: number;
   name: string;
-  /** Iniciais de grama, fogo e água — mostrados no card. */
   starters: [number, number, number];
 }
 

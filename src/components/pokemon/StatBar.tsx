@@ -1,17 +1,14 @@
 import { cn } from '@/lib/cn';
 
-/** Valor máximo teórico de uma base stat — normaliza a barra. */
 const MAX_STAT = 255;
 
 interface StatBarProps {
   label: string;
   value: number;
   color: string;
-  /** Destaca o maior valor ao comparar dois Pokémons. */
   highlight?: boolean;
 }
 
-/** Barra de progresso de uma estatística base. */
 export function StatBar({ label, value, color, highlight }: StatBarProps) {
   const pct = Math.min(100, (value / MAX_STAT) * 100);
   return (

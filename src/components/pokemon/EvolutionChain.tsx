@@ -5,17 +5,12 @@ import { ArrowDownIcon } from '@/components/ui/icons';
 import { TypeIcon } from './TypeIcon';
 import { capitalize, formatDexNumber } from '@/lib/format';
 import { getPrimaryTypeColor } from '@/lib/pokemonTypes';
+import { menuSpriteUrl, staticSpriteUrl } from '@/lib/pokeapi';
 import { describeEvolution } from '@/lib/evolution';
 import type { EvolutionChainLink } from '@/types/pokemon';
 
-/** Azul das setas/gatilhos de evolução (Figma). */
 const ARROW_COLOR = '#173ea5';
 
-/**
- * Card de um estágio evolutivo (Figma): pill com borda #e6e6e6, círculo
- * na cor do tipo com o símbolo e o sprite estático, nome, número e
- * barrinha do tipo.
- */
 function EvolutionStage({ name }: { name: string }) {
   const { data } = usePokemon(name);
   const types = data?.types.map((t) => t.type.name) ?? [];
@@ -27,29 +22,28 @@ function EvolutionStage({ name }: { name: string }) {
       to={data ? `/pokemon/${data.id}` : '#'}
       className="flex h-[76px] w-full max-w-[296px] items-center rounded-full border border-gray-100 transition-shadow hover:shadow-md"
     >
-      {/* Círculo colorido com símbolo do tipo + sprite */}
       <span
-        className="relative grid h-[74px] w-[95px] shrink-0 place-items-center overflow-visible rounded-full"
+        className="relative grid h-[74px] w-[95px] shrink-0 place-items-center rounded-full"
         style={{ backgroundColor: color }}
       >
         {primary && (
-          <TypeIcon
-            type={primary}
-            className="absolute h-[65px] w-[65px] text-white/40"
-          />
+          <TypeIcon type={primary} className="absolute h-[65px] w-[65px] text-white/40" />
         )}
         {data ? (
           <img
-            src={data.sprites.front_default ?? ''}
+            src={menuSpriteUrl(data.id)}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = staticSpriteUrl(data.id);
+            }}
             alt={capitalize(name)}
-            className="relative h-[81px] w-[81px] object-contain [image-rendering:pixelated]"
+            className="absolute -bottom-1 left-1/2 w-[104px] max-w-none -translate-x-1/2 mb-2 [image-rendering:pixelated]"
           />
         ) : (
           <Spinner className="h-5 w-5" />
         )}
       </span>
 
-      {/* Nome, número e barrinha do tipo */}
       <span className="ml-3 flex flex-col gap-1">
         <span className="leading-tight">
           <span className="block text-base font-medium text-[#1a1a1a]">
@@ -71,7 +65,6 @@ function EvolutionStage({ name }: { name: string }) {
   );
 }
 
-/** Seta grossa para baixo + gatilho da evolução ("Pedra da Lua"…). */
 function EvolutionArrow({ label }: { label: string }) {
   return (
     <div className="flex items-center gap-2 py-1" style={{ color: ARROW_COLOR }}>
@@ -81,7 +74,6 @@ function EvolutionArrow({ label }: { label: string }) {
   );
 }
 
-/** Renderiza recursivamente o nó e seus evoluídos (suporta ramificações). */
 function EvolutionNode({ node }: { node: EvolutionChainLink }) {
   return (
     <>
@@ -96,7 +88,6 @@ function EvolutionNode({ node }: { node: EvolutionChainLink }) {
   );
 }
 
-/** Cadeia evolutiva completa dentro do container com borda (Figma). */
 export function EvolutionChainView({ chainUrl }: { chainUrl: string | undefined }) {
   const { data, isLoading } = useEvolutionChain(chainUrl);
 

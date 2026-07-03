@@ -10,12 +10,12 @@ import type {
 } from '@/types/pokemon';
 
 const BASE_URL = 'https://pokeapi.co/api/v2';
+const SPRITES_CDN =
+  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
 
-/** Sprite oficial (artwork) em alta, com fallback para o sprite padrão. */
 const artwork = (id: number) =>
-  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+  `${SPRITES_CDN}/other/official-artwork/${id}.png`;
 
-/** Erro tipado para falhas de rede/HTTP da PokeAPI. */
 export class PokeApiError extends Error {
   readonly status?: number;
 
@@ -26,56 +26,37 @@ export class PokeApiError extends Error {
   }
 }
 
-/** Wrapper de fetch com genérico e checagem de status. */
 async function request<T>(path: string, signal?: AbortSignal): Promise<T> {
   const url = path.startsWith('http') ? path : `${BASE_URL}${path}`;
   const res = await fetch(url, { signal });
   if (!res.ok) {
-    throw new PokeApiError(
-      `Falha ao buscar "${url}" (${res.status})`,
-      res.status,
-    );
+    throw new PokeApiError(`Falha ao buscar "${url}" (${res.status})`, res.status);
   }
   return res.json() as Promise<T>;
 }
 
-/** Extrai o id numérico de uma URL da PokeAPI (…/pokemon/25/ → 25). */
 export function extractIdFromUrl(url: string): number {
   const match = url.match(/\/(\d+)\/?$/);
   return match ? Number(match[1]) : 0;
 }
 
-const SPRITES_CDN =
-  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon';
-
-/**
- * URL do GIF 2D animado por id, sem precisar buscar o Pokémon:
- * geração V (pixel art) para ids antigos, Showdown para os demais.
- */
+// GIF animado por id: gen V para os antigos, Showdown para os demais
 export function animatedSpriteUrl(id: number): string {
   return id <= 649
     ? `${SPRITES_CDN}/versions/generation-v/black-white/animated/${id}.gif`
     : `${SPRITES_CDN}/other/showdown/${id}.gif`;
 }
 
-/** Sprite 2D pixelado estático (96x96) — usado nos cards da listagem. */
+// sprite 2D estático usado nos cards
 export function staticSpriteUrl(id: number): string {
   return `${SPRITES_CDN}/${id}.png`;
 }
 
-/**
- * Ícone de menu (pixel art de baixa resolução) — usado nos iniciais
- * da tela de Regiões. Não cobre a geração IX (usar staticSpriteUrl
- * como fallback via onError).
- */
+// ícone de menu (pixel art antigo) — não cobre a geração IX
 export function menuSpriteUrl(id: number): string {
   return `${SPRITES_CDN}/versions/generation-viii/icons/${id}.png`;
 }
 
-/**
- * Melhor sprite 2D animado disponível: GIF da geração V (pixel art) →
- * GIF do Showdown → sprite estático → artwork. Sempre retorna algo exibível.
- */
 export function getAnimatedSprite(pokemon: Pokemon): string {
   return (
     pokemon.sprites.versions?.['generation-v']?.['black-white']?.animated
@@ -86,20 +67,17 @@ export function getAnimatedSprite(pokemon: Pokemon): string {
   );
 }
 
-/** Converte o Pokémon cru no modelo enxuto usado nos cards. */
 export function toSummary(pokemon: Pokemon): PokemonSummary {
   return {
     id: pokemon.id,
     name: pokemon.name,
     types: pokemon.types.map((t) => t.type.name),
-    // sprite 2D pixelado estático — o GIF animado fica só na página de detalhes
     sprite: pokemon.sprites.front_default ?? artwork(pokemon.id),
     height: pokemon.height,
     weight: pokemon.weight,
   };
 }
 
-/** Página da Pokédex (lista de referências {name,url}). */
 export function getPokemonPage(
   limit: number,
   offset: number,
@@ -108,7 +86,6 @@ export function getPokemonPage(
   return request(`/pokemon?limit=${limit}&offset=${offset}`, signal);
 }
 
-/** Detalhe completo de um Pokémon por id ou nome. */
 export function getPokemon(
   idOrName: number | string,
   signal?: AbortSignal,
@@ -116,7 +93,6 @@ export function getPokemon(
   return request(`/pokemon/${idOrName}`, signal);
 }
 
-/** Busca vários Pokémons em paralelo e devolve os resumos já ordenados por id. */
 export async function getPokemonSummaries(
   idsOrNames: Array<number | string>,
   signal?: AbortSignal,
@@ -127,7 +103,6 @@ export async function getPokemonSummaries(
   return results.sort((a, b) => a.id - b.id);
 }
 
-/** Espécie: fonte de geração e da URL da cadeia evolutiva. */
 export function getSpecies(
   idOrName: number | string,
   signal?: AbortSignal,
@@ -135,7 +110,6 @@ export function getSpecies(
   return request(`/pokemon-species/${idOrName}`, signal);
 }
 
-/** Cadeia evolutiva completa. */
 export function getEvolutionChain(
   urlOrId: string | number,
   signal?: AbortSignal,
@@ -146,7 +120,6 @@ export function getEvolutionChain(
   );
 }
 
-/** Relações de dano de um tipo — usadas para calcular fraquezas. */
 export async function getTypeDamageRelations(
   type: PokemonTypeName,
   signal?: AbortSignal,
@@ -158,7 +131,6 @@ export async function getTypeDamageRelations(
   return data.damage_relations;
 }
 
-/** Todos os Pokémons de um tipo (para o filtro por tipo). */
 export async function getPokemonNamesByType(
   type: PokemonTypeName,
   signal?: AbortSignal,
@@ -169,7 +141,6 @@ export async function getPokemonNamesByType(
   return data.pokemon.map((p) => p.pokemon);
 }
 
-/** Índice completo (nome+id) de toda a Pokédex — usado na busca global. */
 export async function getPokemonIndex(
   signal?: AbortSignal,
 ): Promise<Array<{ id: number; name: string }>> {

@@ -12,15 +12,15 @@ export function SearchIcon(props: SVGProps<SVGSVGElement>) {
 export function HeartIcon({ filled, ...props }: SVGProps<SVGSVGElement> & { filled?: boolean }) {
   return (
     <svg
-      viewBox="0 0 24 24"
+      viewBox="0 0 28 28"
       fill={filled ? 'currentColor' : 'none'}
       stroke="currentColor"
-      strokeWidth={2}
+      strokeWidth={2.5}
       strokeLinecap="round"
       strokeLinejoin="round"
       {...props}
     >
-      <path d="M12 21c-1-.8-8-5.5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.5-7 10.2-8 11Z" />
+      <path d="M24.3135 5.37819C23.7176 4.78202 23.0101 4.30911 22.2314 3.98645C21.4527 3.66379 20.618 3.49772 19.7751 3.49772C18.9322 3.49772 18.0976 3.66379 17.3189 3.98645C16.5402 4.30911 15.8327 4.78202 15.2368 5.37819L14.0001 6.61485L12.7635 5.37819C11.5598 4.17454 9.92734 3.49835 8.22514 3.49835C6.52293 3.49835 4.89045 4.17454 3.68681 5.37819C2.48316 6.58183 1.80697 8.21431 1.80697 9.91652C1.80697 11.6187 2.48316 13.2512 3.68681 14.4549L4.92347 15.6915L14.0001 24.7682L23.0768 15.6915L24.3135 14.4549C24.9096 13.859 25.3826 13.1515 25.7052 12.3728C26.0279 11.5941 26.1939 10.7594 26.1939 9.91652C26.1939 9.07362 26.0279 8.23897 25.7052 7.46027C25.3826 6.68157 24.9096 5.97407 24.3135 5.37819V5.37819Z" />
     </svg>
   );
 }
@@ -57,8 +57,8 @@ export function PokeballIcon(props: SVGProps<SVGSVGElement>) {
 
 export function ArrowLeftIcon(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M19 12H5M12 19l-7-7 7-7" />
+    <svg className="border border-black" width="9" height="16" viewBox="0 0 9 16" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path d="M7.58203 1.25L1.2487 7.58333L7.58203 13.9167" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   );
 }

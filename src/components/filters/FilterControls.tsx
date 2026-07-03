@@ -11,7 +11,6 @@ import {
 
 type Sheet = 'type' | 'sort' | null;
 
-/** Botão-pill escuro do Figma ("Todos os tipos ⌄" / "Menor número ⌄"). */
 function PillButton({
   label,
   onClick,
@@ -26,7 +25,7 @@ function PillButton({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex h-[42px] flex-1 items-center justify-center gap-2 rounded-full bg-gray-800 px-4 text-[15px] font-semibold text-white transition-colors hover:bg-black',
+        'flex h-[42px] flex-1 items-center justify-center gap-2 rounded-full bg-gray-800 px-4 text-[15px] font-semibold text-white mr-3 transition-colors hover:bg-black',
         active && 'ring-2 ring-gray-800/30',
       )}
     >
@@ -36,7 +35,6 @@ function PillButton({
   );
 }
 
-/** Pill escura de opção dentro dos sheets (Figma). */
 function DarkPill({
   label,
   selected,
@@ -60,7 +58,6 @@ function DarkPill({
   );
 }
 
-/** Os dois filtros da listagem (tipo + ordenação), fiéis ao Figma. */
 export function FilterControls() {
   const [sheet, setSheet] = useState<Sheet>(null);
   const close = () => setSheet(null);
@@ -78,7 +75,7 @@ export function FilterControls() {
         <PillButton label={SORT_LABELS[sort]} onClick={() => setSheet('sort')} />
       </div>
 
-      {/* Sheet: tipo (pills coloridas) */}
+      {/* Filtro de tipo */}
       <BottomSheet open={sheet === 'type'} onClose={close} title="Selecione o tipo">
         <div className="flex flex-col gap-2.5">
           <DarkPill
@@ -113,7 +110,7 @@ export function FilterControls() {
         </div>
       </BottomSheet>
 
-      {/* Sheet: ordenação (pills escuras) */}
+      {/* Ordenação */}
       <BottomSheet open={sheet === 'sort'} onClose={close} title="Selecione a ordem">
         <div className="flex flex-col gap-2.5">
           {(Object.keys(SORT_LABELS) as SortOption[]).map((option) => (

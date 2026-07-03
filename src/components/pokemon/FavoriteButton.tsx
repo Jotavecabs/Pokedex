@@ -6,11 +6,10 @@ interface FavoriteButtonProps {
   id: number;
   className?: string;
   size?: number;
-  /** `solid`: círculo branco. `ghost`: contorno branco sobre cor (Figma). */
-  variant?: 'solid' | 'ghost';
+  // solid: círculo branco | ghost: contorno branco | bare: só o coração
+  variant?: 'solid' | 'ghost' | 'bare';
 }
 
-/** Botão coração que alterna o favorito no estado global. */
 export function FavoriteButton({
   id,
   className,
@@ -41,9 +40,9 @@ export function FavoriteButton({
         variant === 'ghost' &&
           cn(
             'border-2 border-white/90 hover:bg-white/15',
-            // favoritado: coração vermelho preenchido (Figma)
-            isFavorite ? 'bg-white/90 text-[#cd3131]' : 'text-white',
+            isFavorite ? 'bg-white/0 text-[#cd3131]' : 'text-white',
           ),
+        variant === 'bare' && (isFavorite ? 'text-[#cd3131]' : 'text-white'),
         className,
       )}
     >

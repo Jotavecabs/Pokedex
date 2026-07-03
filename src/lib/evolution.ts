@@ -1,7 +1,6 @@
 import { capitalize } from './format';
 import type { EvolutionDetail } from '@/types/pokemon';
 
-/** Itens de evolução mais comuns traduzidos para pt-BR. */
 const ITEM_LABELS: Record<string, string> = {
   'moon-stone': 'Pedra da Lua',
   'fire-stone': 'Pedra do Fogo',
@@ -25,10 +24,7 @@ const TRIGGER_LABELS: Record<string, string> = {
   spin: 'Especial',
 };
 
-/**
- * Descreve como um estágio evolui a partir do anterior, em pt-BR:
- * "Nível 16", "Pedra da Lua", "Nível de Amizade", "Troca"…
- */
+// "Nível 16", "Pedra da Lua", "Nível de Amizade"...
 export function describeEvolution(details: EvolutionDetail[]): string {
   const detail = details[0];
   if (!detail) return 'Evolução';

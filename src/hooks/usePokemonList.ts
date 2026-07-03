@@ -6,7 +6,6 @@ import { isInGeneration } from '@/lib/generations';
 import { useDebounce } from './useDebounce';
 import type { PokemonSummary } from '@/types/pokemon';
 
-/** Quantos cards carregar por vez ("Carregar mais"). */
 export const PAGE_SIZE = 24;
 
 function matchesHeight(summary: PokemonSummary, bucket: HeightBucket): boolean {
@@ -47,12 +46,9 @@ export interface UsePokemonListResult {
   total: number;
 }
 
-/**
- * Orquestra listagem + busca + filtros (tipo, geração, altura, peso) +
- * ordenação + "carregar mais". Os filtros baratos (nome, tipo, geração,
- * ordenação) reduzem a lista de ids ANTES de buscar detalhes; altura e peso,
- * que dependem do detalhe, são aplicados sobre os já carregados.
- */
+// busca + filtros + ordenação + "carregar mais".
+// Filtros baratos (nome/tipo/geração) reduzem a lista de ids antes de
+// buscar detalhes; altura/peso dependem do detalhe e filtram depois.
 export function usePokemonList(): UsePokemonListResult {
   const { search, type, generation, height, weight, sort } = useFiltersStore();
   const debouncedSearch = useDebounce(search.trim().toLowerCase(), 300);
@@ -62,12 +58,10 @@ export function usePokemonList(): UsePokemonListResult {
 
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  // Lista de ids candidatos após filtros "baratos" + ordenação.
   const candidateIds = useMemo(() => {
     const index = indexQuery.data ?? [];
     const nameById = new Map(index.map((p) => [p.id, p.name]));
 
-    // Base: todos os ids, ou só os do tipo selecionado.
     let ids =
       type && typeQuery.data ? typeQuery.data.slice() : index.map((p) => p.id);
 
@@ -96,7 +90,6 @@ export function usePokemonList(): UsePokemonListResult {
     return ids;
   }, [indexQuery.data, typeQuery.data, type, generation, debouncedSearch, sort]);
 
-  // Reinicia a paginação sempre que os filtros mudam.
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [candidateIds]);
@@ -108,7 +101,6 @@ export function usePokemonList(): UsePokemonListResult {
 
   const { summaries, isLoading, isError } = usePokemonSummaries(visibleIds);
 
-  // Altura/peso dependem do detalhe → filtramos os já carregados.
   const filtered = useMemo(
     () =>
       summaries.filter(

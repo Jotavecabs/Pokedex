@@ -6,7 +6,6 @@ import { usePokemonList } from '@/hooks/usePokemonList';
 import { useFiltersStore } from '@/store/filtersStore';
 import { getRegionByGeneration } from '@/lib/regions';
 
-/** Tela principal — listagem da Pokédex (reproduz o Figma). */
 export function HomePage() {
   const { summaries, isLoading, isError, isEmpty, hasMore, loadMore, total } =
     usePokemonList();
@@ -16,22 +15,18 @@ export function HomePage() {
 
   return (
     <>
-      {/*
-       * Header fixo apenas com a busca, como no Figma.
-       * Sem backdrop-blur: filtros/modais `fixed` não podem ter um ancestral
-       * com backdrop-filter (ele viraria o containing block e prenderia o modal).
-       */}
+      {/* Busca */}
       <header className="sticky top-0 z-30 border-b border-gray-50 bg-white px-4 py-4">
         <SearchBar />
       </header>
 
       <section className="px-4 py-4">
-        {/* Botões de filtro abaixo do header, como no Figma */}
+        {/* Filtros */}
         <div className="mb-4">
           <FilterControls />
         </div>
 
-        {/* Região ativa (vinda da tela Regiões) */}
+        {/* Região ativa */}
         {region && (
           <button
             type="button"
@@ -57,6 +52,7 @@ export function HomePage() {
           </p>
         )}
 
+        {/* Listagem */}
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {summaries.map((pokemon) => (
             <PokemonCard key={pokemon.id} pokemon={pokemon} />
@@ -69,6 +65,7 @@ export function HomePage() {
           </div>
         )}
 
+        {/* Carregar mais */}
         {!isLoading && hasMore && (
           <div className="flex flex-col items-center gap-2 py-6">
             <button

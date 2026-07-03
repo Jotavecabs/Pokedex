@@ -4,19 +4,11 @@ import type { PokemonTypeName } from '@/types/pokemon';
 
 interface TypeIconProps extends SVGProps<SVGSVGElement> {
   type: PokemonTypeName;
-  /**
-   * Preenche o glifo com um degradê branco (marca d'água atrás do sprite
-   * nos cards, como no Figma). Sem isso, usa `currentColor` sólido.
-   */
+  // degradê branco usado na marca d'água dos cards
   whiteGradient?: boolean;
 }
 
-/**
- * Símbolo oficial do tipo (o mesmo usado nos jogos e no Figma).
- * Pequeno no badge (currentColor), grande como marca d'água (degradê).
- */
 export function TypeIcon({ type, whiteGradient, ...props }: TypeIconProps) {
-  // id determinístico por tipo — instâncias repetidas compartilham o mesmo def
   const gradientId = `type-watermark-${type}`;
   const fill = whiteGradient ? `url(#${gradientId})` : 'currentColor';
 

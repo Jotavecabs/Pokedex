@@ -1,29 +1,29 @@
 # Pokédex — Case Técnico Frontend
 
-Aplicação de Pokédex construída com **React + TypeScript**, consumindo a
-[PokéAPI](https://pokeapi.co). Reproduz fielmente a tela fornecida no Figma e
-implementa todas as funcionalidades do desafio.
+Pokédex construída com **React + TypeScript** consumindo a [PokéAPI](https://pokeapi.co),
+reproduzindo fielmente o design fornecido no Figma — cores, tipografia (Poppins),
+espaçamentos e assets originais exportados do próprio arquivo de design.
 
-🔗 **Deploy:** _adicione aqui a URL da Vercel após o deploy_
-🎨 **Design de referência:** [Figma — Pokédex](https://www.figma.com/design/GNL2BNiYCrMQstUkebspv7)
+🔗 **Deploy:** _cole aqui a URL da Vercel_
+📦 **Repositório:** [github.com/Jotavecabs/Pokedex](https://github.com/Jotavecabs/Pokedex)
 
 ---
 
 ## ✨ Funcionalidades
 
-| Requisito | Status | Onde |
-| --- | --- | --- |
-| Listagem de Pokémons (nome, sprite, tipos) | ✅ | `pages/HomePage.tsx`, `components/pokemon/PokemonCard.tsx` |
-| Paginação / "Carregar mais" | ✅ | `hooks/usePokemonList.ts` |
-| Detalhes em rota dedicada | ✅ | `pages/PokemonDetailPage.tsx` (`/pokemon/:id`) |
-| Favoritar / desfavoritar (estado global) | ✅ | `store/favoritesStore.ts` |
-| Busca por nome | ✅ | `components/filters/SearchBar.tsx` |
-| Filtros múltiplos (tipo, altura, peso, geração) | ✅ | `components/filters/FilterControls.tsx` |
-| Responsividade desktop e mobile | ✅ | grid responsivo em todas as telas |
-| Persistência (favoritos + preferências) | ✅ | `zustand/middleware` → `localStorage` |
-| Comparação de estatísticas entre 2 Pokémons | ✅ | `pages/ComparePage.tsx` |
-| Cadeia de evolução | ✅ | `components/pokemon/EvolutionChain.tsx` |
-| Deploy público | ⏳ | Vercel |
+| Funcionalidade | Onde |
+| --- | --- |
+| **Listagem de Pokémons** com sprite 2D, nome, número e tipos | `pages/HomePage.tsx`, `components/pokemon/PokemonCard.tsx` |
+| **"Carregar mais"** (paginação incremental) | `hooks/usePokemonList.ts` |
+| **Busca por nome** (com debounce) | `components/filters/SearchBar.tsx` |
+| **Filtro por tipo** (bottom sheet com os 18 tipos) e **ordenação** (menor/maior número, A-Z, Z-A) | `components/filters/FilterControls.tsx` |
+| **Regiões** — navegar por geração (Kanto → Galar) com as artes oficiais | `pages/RegionsPage.tsx`, `lib/regions.ts` |
+| **Detalhes em rota dedicada** (`/pokemon/:id`): descrição, peso/altura/categoria/habilidade, gênero, fraquezas, estatísticas e cadeia de evolução com gatilhos ("Pedra da Lua", "Nível 16"…) | `pages/PokemonDetailPage.tsx` |
+| **Favoritar/desfavoritar** (estado global) + **arrastar para a esquerda** para remover | `store/favoritesStore.ts`, `pages/FavoritesPage.tsx` |
+| **Comparação de estatísticas** entre 2 Pokémons, com destaque do maior valor | `pages/ComparePage.tsx` |
+| **Persistência** de favoritos, comparação e preferências de filtro | `zustand/middleware` → `localStorage` |
+| **Descrições em português** (tradução automática — ver abaixo) | `lib/translate.ts` |
+| **Responsividade** desktop e mobile | grid responsivo em todas as telas |
 
 ---
 
@@ -31,31 +31,49 @@ implementa todas as funcionalidades do desafio.
 
 | Ferramenta | Por quê |
 | --- | --- |
-| **Vite** | Dev server e build rápidos; padrão atual para SPAs React. |
-| **React 19 + TypeScript** | Tipagem forte como diferencial (ver abaixo). |
-| **TanStack Query** | Cache, deduplicação e estados de loading/erro para as centenas de requisições da PokéAPI (que é bastante fragmentada). Cada Pokémon é cacheado por `id` e reaproveitado entre listagem, favoritos, detalhes e comparação. |
-| **Zustand** (+ `persist`) | Estado global mínimo e sem boilerplate para favoritos, comparação e filtros. O middleware `persist` resolve o requisito de persistência em `localStorage` de forma declarativa. |
-| **React Router** | Rota dedicada de detalhes (`/pokemon/:id`) + páginas de favoritos e comparação. |
-| **Tailwind CSS v4** | Reproduzir o Figma rapidamente e manter a responsividade próxima ao design. As cores dos tipos vêm das variáveis exatas do Figma (`lib/pokemonTypes.ts`). |
+| **Vite + React 19 + TypeScript** | Build rápido e tipagem forte de ponta a ponta. |
+| **TanStack Query** | A PokéAPI é fragmentada (detalhe, espécie, evolução e tipo são endpoints separados). O Query cacheia cada recurso por chave e deduplica — um Pokémon visto na listagem não é rebuscado nos detalhes, favoritos ou comparação. |
+| **Zustand (+ persist)** | Estado global mínimo para favoritos, comparação e filtros; o middleware `persist` grava em `localStorage` de forma declarativa. |
+| **React Router** | Rota dedicada de detalhes + páginas de regiões, favoritos e comparação. |
+| **Tailwind CSS v4** | Reprodução fiel do Figma com produtividade; tokens de cor dos 18 tipos centralizados em `lib/pokemonTypes.ts`. |
 
-### Tipagem forte (diferencial)
+### Tipagem forte (sem `any`)
 
-- **Zero `any`.** Os contratos da PokéAPI estão modelados em `types/pokemon.ts`.
-- **União literal** para os 18 tipos (`PokemonTypeName`) e para as 6 estatísticas
-  (`StatName`) — o compilador garante que rótulos, cores e filtros cobrem todos os casos.
-- **Genéricos** no cliente HTTP (`request<T>`) e em `usePokemonSummaries`.
-- **Type guards** (`filter((s): s is PokemonSummary => …)`) para estreitar tipos
-  ao descartar resultados nulos.
-- Modelo cru (`Pokemon`) separado do modelo de UI (`PokemonSummary`), convertido
-  por `toSummary()`.
+- Contratos da PokéAPI modelados em `types/pokemon.ts`;
+- Uniões literais para os 18 tipos (`PokemonTypeName`) e as 6 estatísticas (`StatName`) — o compilador garante cobertura total em rótulos, cores e filtros;
+- Genéricos no cliente HTTP (`request<T>`) e type guards ao filtrar resultados nulos;
+- Modelo cru da API (`Pokemon`) separado do modelo de UI (`PokemonSummary`).
 
-### Como os filtros funcionam
+### Descrições em pt-BR (limitação da PokéAPI)
 
-Os filtros "baratos" (nome, tipo, geração, ordenação) reduzem a lista de **ids**
-_antes_ de buscar detalhes na API — só os cards visíveis são carregados.
-Altura e peso dependem do detalhe de cada Pokémon, então são aplicados sobre os
-itens já carregados. As **preferências de filtro** são persistidas; a busca é
-reiniciada a cada sessão.
+A PokéAPI **não fornece flavor texts em português**. A solução em camadas
+(`lib/translate.ts` + `useFlavorTextPtBr`):
+
+1. Se a API tiver pt-BR um dia, usa direto;
+2. Senão, o texto em inglês é traduzido automaticamente via **MyMemory**
+   (API pública e gratuita, sem chave);
+3. Cada tradução é **cacheada em `localStorage`** — um Pokémon é traduzido uma
+   única vez por dispositivo, respeitando a cota da API;
+4. Enquanto a tradução carrega — ou se ela falhar — a UI exibe o inglês
+   (graceful degradation, nunca quebra).
+
+### Fraquezas calculadas de verdade
+
+As fraquezas do Pokémon multiplicam as relações de dano (`/type/{name}`) de
+todos os seus tipos (2x, 0.5x, 0x) e exibem só o resultado > 1 — igual aos jogos.
+
+### Sprites
+
+- **Cards, regiões e comparação:** pixel art 2D estática (`front_default` e
+  ícones de menu), com `image-rendering: pixelated`;
+- **Página do Pokémon:** GIF 2D animado (estilo Gen V), com fallback para o
+  sprite estático quando o GIF não existe.
+
+### Gestos
+
+Nos favoritos, **arrastar o card para a esquerda** revela a lixeira (toque
+remove); arrastar até o fim desfavorita instantaneamente — implementado com
+Pointer Events, sem bibliotecas.
 
 ---
 
@@ -63,17 +81,17 @@ reiniciada a cada sessão.
 
 ```
 src/
-├── api/          # hooks do TanStack Query (queries.ts)
+├── api/          # hooks do TanStack Query (dados + tradução + fraquezas)
 ├── components/
-│   ├── filters/  # busca + sheets de tipo/ordenação/filtros
-│   ├── layout/   # shell + barra de navegação inferior
-│   ├── pokemon/  # card, badge, favorito, stats, evolução
+│   ├── filters/  # busca + sheets de tipo e ordenação
+│   ├── layout/   # shell, header de página e hotbar (assets do Figma)
+│   ├── pokemon/  # card, badges, ícones de tipo, favorito, stats, evolução
 │   └── ui/       # bottom sheet, spinner, ícones
-├── hooks/        # useDebounce, usePokemonList (orquestra a listagem)
-├── lib/          # cliente PokéAPI, tipos de Pokémon, formatação, gerações
-├── pages/        # Home, Detalhes, Favoritos, Comparar
+├── hooks/        # useDebounce, usePokemonList (busca+filtros+paginação)
+├── lib/          # cliente PokéAPI, tipos, regiões, gerações, tradução, formatação
+├── pages/        # Pokédex, Detalhes, Regiões, Favoritos, Comparar
 ├── store/        # Zustand: favoritos, comparação, filtros
-└── types/        # tipos da PokéAPI
+└── types/        # contratos TypeScript da PokéAPI
 ```
 
 ---
@@ -83,39 +101,30 @@ src/
 Pré-requisitos: **Node 18+** e **npm**.
 
 ```bash
-# 1. Instalar dependências
+# 1. Clonar e instalar
+git clone https://github.com/Jotavecabs/Pokedex.git
+cd Pokedex
 npm install
 
 # 2. Ambiente de desenvolvimento (http://localhost:5173)
 npm run dev
 
-# 3. Build de produção
+# 3. Build de produção + preview
 npm run build
-
-# 4. Pré-visualizar o build
 npm run preview
 ```
 
-Não há variáveis de ambiente — a PokéAPI é pública.
+Não há variáveis de ambiente — a PokéAPI e a API de tradução são públicas.
 
 ---
 
 ## 📝 Observações técnicas
 
-- **Sprites:** usamos a _official artwork_ em alta resolução, com fallback para o
-  sprite padrão.
-- **`useQueries`:** a listagem busca cada Pokémon como uma query independente,
-  então cards já vistos vêm do cache ao paginar ou navegar entre telas.
-- **Acessibilidade:** botões com `aria-label`/`aria-pressed`, foco visível,
-  fechamento de modais por `Esc` e overlay.
-- **SPA na Vercel:** `vercel.json` reescreve todas as rotas para `index.html`
-  para que rotas como `/pokemon/25` funcionem no deploy.
-
----
-
-## ☁️ Deploy (Vercel)
-
-1. Suba o repositório no GitHub.
-2. Em [vercel.com](https://vercel.com) → **Add New → Project** → importe o repo.
-3. A Vercel detecta o Vite automaticamente (`build`: `npm run build`, output: `dist`).
-4. Deploy. Cole a URL gerada no topo deste README.
+- **SPA na Vercel:** `vercel.json` reescreve todas as rotas para `index.html`,
+  então URLs diretas como `/pokemon/25` funcionam no deploy;
+- **Filtros eficientes:** nome, tipo, geração e ordenação reduzem a lista de
+  *ids* antes de buscar detalhes — só os cards visíveis geram requisições;
+- **Acessibilidade:** `aria-label`/`aria-pressed` nos botões de ação, foco
+  visível, modais fecham com `Esc` e clique no overlay;
+- **Assets:** artes das regiões, Magikarp e ícones exportados do arquivo
+  Figma; símbolos dos 18 tipos em SVG ([duiker101/pokemon-type-svg-icons](https://github.com/duiker101/pokemon-type-svg-icons), MIT).

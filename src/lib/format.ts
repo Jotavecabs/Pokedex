@@ -1,11 +1,10 @@
 import type { StatName } from '@/types/pokemon';
 
-/** "Nº001", "Nº025"… número da Pokédex com zero à esquerda. */
+// "Nº001", "Nº025"...
 export function formatDexNumber(id: number): string {
   return `Nº${String(id).padStart(3, '0')}`;
 }
 
-/** Primeira letra maiúscula; trata nomes com hífen (ex.: "mr-mime"). */
 export function capitalize(value: string): string {
   return value
     .split('-')
@@ -13,17 +12,16 @@ export function capitalize(value: string): string {
     .join(' ');
 }
 
-/** PokeAPI dá altura em decímetros → metros (vírgula decimal, como no Figma). */
+// decímetros → metros
 export function formatHeight(decimeters: number): string {
   return `${(decimeters / 10).toFixed(1).replace('.', ',')} m`;
 }
 
-/** PokeAPI dá peso em hectogramas → quilogramas (vírgula decimal). */
+// hectogramas → quilogramas
 export function formatWeight(hectograms: number): string {
   return `${(hectograms / 10).toFixed(1).replace('.', ',')} kg`;
 }
 
-/** Rótulos pt-BR das 6 estatísticas base. */
 export const STAT_LABELS: Record<StatName, string> = {
   hp: 'HP',
   attack: 'Ataque',

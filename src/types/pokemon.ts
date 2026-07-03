@@ -1,10 +1,5 @@
-/**
- * Tipagem forte dos dados consumidos da PokeAPI (https://pokeapi.co).
- * Modelamos apenas os campos que a aplicação usa — evitando `any` e
- * mantendo os contratos explícitos.
- */
+// Tipos dos dados consumidos da PokeAPI (https://pokeapi.co)
 
-/** Os 18 tipos elementais existentes. Usado como união literal, não `string`. */
 export type PokemonTypeName =
   | 'normal'
   | 'fire'
@@ -25,13 +20,11 @@ export type PokemonTypeName =
   | 'steel'
   | 'fairy';
 
-/** Referência genérica `{ name, url }` que a PokeAPI usa em toda parte. */
 export interface NamedAPIResource {
   name: string;
   url: string;
 }
 
-/** Resposta paginada padrão da PokeAPI. */
 export interface PaginatedResponse<T = NamedAPIResource> {
   count: number;
   next: string | null;
@@ -65,7 +58,6 @@ export interface PokemonSprites {
     home?: {
       front_default: string | null;
     };
-    /** GIF animado estilo Pokémon Showdown. */
     showdown?: {
       front_default: string | null;
     };
@@ -73,7 +65,6 @@ export interface PokemonSprites {
   versions?: {
     'generation-v'?: {
       'black-white'?: {
-        /** GIFs 2D animados em pixel art (apenas ids ≤ 649). */
         animated?: {
           front_default: string | null;
         };
@@ -82,7 +73,6 @@ export interface PokemonSprites {
   };
 }
 
-/** Detalhe completo de um Pokémon (endpoint /pokemon/{id}). */
 export interface Pokemon {
   id: number;
   name: string;
@@ -97,7 +87,6 @@ export interface Pokemon {
   species: NamedAPIResource;
 }
 
-/** Nomes canônicos das 6 estatísticas base. */
 export type StatName =
   | 'hp'
   | 'attack'
@@ -106,15 +95,12 @@ export type StatName =
   | 'special-defense'
   | 'speed';
 
-/** Espécie (endpoint /pokemon-species/{id}) — usada para geração e evolução. */
 export interface PokemonSpecies {
   id: number;
   name: string;
   generation: NamedAPIResource;
   evolution_chain: { url: string };
-  /** Proporção de fêmeas em oitavos (0–8); -1 = sem gênero. */
-  gender_rate: number;
-  /** Categoria ("Fairy Pokémon", "Seed Pokémon"…) por idioma. */
+  gender_rate: number; // proporção de fêmeas em oitavos; -1 = sem gênero
   genera: Array<{
     genus: string;
     language: NamedAPIResource;
@@ -126,7 +112,6 @@ export interface PokemonSpecies {
   }>;
 }
 
-/** Condições de uma evolução (nível, item, felicidade, troca…). */
 export interface EvolutionDetail {
   trigger: NamedAPIResource;
   min_level: number | null;
@@ -136,18 +121,10 @@ export interface EvolutionDetail {
   time_of_day: string;
 }
 
-/** Nó recursivo da cadeia evolutiva (endpoint /evolution-chain/{id}). */
 export interface EvolutionChainLink {
   species: NamedAPIResource;
   evolution_details: EvolutionDetail[];
   evolves_to: EvolutionChainLink[];
-}
-
-/** Relações de dano de um tipo (endpoint /type/{name}) — base das fraquezas. */
-export interface TypeDamageRelations {
-  double_damage_from: NamedAPIResource[];
-  half_damage_from: NamedAPIResource[];
-  no_damage_from: NamedAPIResource[];
 }
 
 export interface EvolutionChain {
@@ -155,10 +132,13 @@ export interface EvolutionChain {
   chain: EvolutionChainLink;
 }
 
-/**
- * Modelo "achatado" que a UI consome — derivado do `Pokemon` cru.
- * Mantém só o essencial para os cards e listagens.
- */
+export interface TypeDamageRelations {
+  double_damage_from: NamedAPIResource[];
+  half_damage_from: NamedAPIResource[];
+  no_damage_from: NamedAPIResource[];
+}
+
+// modelo enxuto que a UI consome nos cards
 export interface PokemonSummary {
   id: number;
   name: string;
