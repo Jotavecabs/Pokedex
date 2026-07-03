@@ -17,7 +17,7 @@ export function TypeBadge({ type, size = 'sm' }: TypeBadgeProps) {
       className={cn(
         'inline-flex items-center rounded-full font-medium',
         meta.textOnColor === 'light' ? 'text-white' : 'text-black',
-        sm ? 'gap-1.5 py-[3px] pl-[3px] pr-2.5 text-[11px]' : 'gap-2 py-1 pl-1 pr-3 text-sm',
+        sm ? 'gap-1 py-[3px] pl-[3px] pr-2 text-[11px]' : 'gap-2 py-1 pl-1 pr-3 text-sm',
       )}
       style={{ backgroundColor: meta.color }}
     >
