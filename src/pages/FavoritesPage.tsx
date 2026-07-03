@@ -56,15 +56,16 @@ function SwipeableFavorite({ pokemon }: { pokemon: PokemonSummary }) {
           startOffset.current = offset;
           moved.current = false;
           setDragging(true);
-          e.currentTarget.setPointerCapture(e.pointerId);
         }}
         onPointerMove={(e) => {
           if (!dragging) return;
 
           const dx = e.clientX - startX.current;
 
-          if (Math.abs(dx) > 5) {
+          // captura só quando vira arrasto, senão o click no coração não dispara
+          if (Math.abs(dx) > 5 && !moved.current) {
             moved.current = true;
+            e.currentTarget.setPointerCapture(e.pointerId);
           }
 
           setOffset(
