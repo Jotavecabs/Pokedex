@@ -16,9 +16,9 @@ export function TypeIcon({ type, whiteGradient, ...props }: TypeIconProps) {
     <svg viewBox="0 0 512 512" aria-hidden {...props}>
       {whiteGradient && (
         <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="#ffffff" stopOpacity="0.6" />
-            <stop offset="1" stopColor="#ffffff" stopOpacity="0.05" />
+          <linearGradient id={gradientId} x1="0.05" y1="0.075" x2="0.87" y2="1.03">
+            <stop offset="0" stopColor="#ffffff" stopOpacity="1" />
+            <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
           </linearGradient>
         </defs>
       )}
