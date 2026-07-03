@@ -66,14 +66,13 @@ todos os seus tipos (2x, 0.5x, 0x) e exibem só o resultado > 1 — igual aos jo
 
 - **Cards, regiões e comparação:** pixel art 2D estática (`front_default` e
   ícones de menu), com `image-rendering: pixelated`;
-- **Página do Pokémon:** GIF 2D animado (estilo Gen V), com fallback para o
-  sprite estático quando o GIF não existe.
+- **Página do Pokémon:** GIF 2D animado (sprites do Pokémon Showdown, com
+  cobertura até a geração IX) e fallback para o sprite estático.
 
 ### Gestos
 
-Nos favoritos, **arrastar o card para a esquerda** revela a lixeira (toque
-remove); arrastar até o fim desfavorita instantaneamente — implementado com
-Pointer Events, sem bibliotecas.
+Nos favoritos, **arrastar o card para a esquerda** revela a lixeira para
+desfavoritar — implementado com Pointer Events, sem bibliotecas.
 
 ---
 
