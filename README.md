@@ -4,7 +4,7 @@ Pokédex construída com **React + TypeScript** consumindo a [PokéAPI](https://
 reproduzindo fielmente o design fornecido no Figma — cores, tipografia (Poppins),
 espaçamentos e assets originais exportados do próprio arquivo de design.
 
-🔗 **Deploy:** pokedexcase.vercel.app
+🔗 **Deploy:** [pokedexcase.vercel.app](https://pokedexcase.vercel.app)
 📦 **Repositório:** [github.com/Jotavecabs/Pokedex](https://github.com/Jotavecabs/Pokedex)
 
 ---

@@ -25,7 +25,7 @@ function PillButton({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex h-[42px] flex-1 items-center justify-center gap-2 rounded-full bg-gray-800 px-4 text-[15px] font-semibold text-white mr-3 transition-colors hover:bg-black',
+        'flex h-[42px] min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-gray-800 px-4 text-[15px] font-semibold text-white transition-colors hover:bg-black',
         active && 'ring-2 ring-gray-800/30',
       )}
     >
